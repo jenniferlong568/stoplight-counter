@@ -1,0 +1,454 @@
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: #0f172a;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.app,
+.map {
+  position: fixed;
+  inset: 0;
+}
+
+/* Dots you draw */
+.route-dot span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #fff;
+  box-sizing: border-box;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  color: #fff;
+  font: 700 12px/1 system-ui, sans-serif;
+}
+
+/* Signals on the route */
+.signal-pin span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dc2626;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  color: #fff;
+  font: 700 11px/1 system-ui, sans-serif;
+}
+.signal-pin.special span {
+  background: #f59e0b;
+  color: #111;
+}
+
+/* Bottom sheet */
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 6px 20px calc(16px + env(safe-area-inset-bottom));
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 20px rgb(0 0 0 / 0.18);
+  max-height: 70dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sheet-handle {
+  display: block;
+  width: 100%;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.sheet-handle::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 0 auto;
+  border-radius: 3px;
+  background: #cbd5e1;
+}
+
+.summary {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.total-number {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.total-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+.distance {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.muted {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.breakdown {
+  margin: 10px 0 0;
+  font-size: 16px;
+}
+.status {
+  margin: 8px 0 0;
+  min-height: 1.3em;
+  font-size: 14px;
+  color: #475569;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.controls button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+.controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-left: auto;
+  font-weight: 600;
+}
+.toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: #2563eb;
+}
+
+/* Keep Leaflet's zoom buttons clear of the notch */
+.leaflet-top {
+  top: env(safe-area-inset-top);
+}
+
+.sheet-top {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.settings-button {
+  flex: none;
+  width: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+}
+.settings-button[aria-expanded='true'] {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Addresses / Draw toggle */
+.mode-toggle {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f1f5f9;
+}
+.mode-toggle button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+.mode-toggle button[aria-pressed='true'] {
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+}
+
+/* Start / End address card, at the top so the keyboard doesn't cover it */
+.address-card {
+  position: fixed;
+  top: calc(26px + env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
+  z-index: 1001;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 10px 12px;
+  display: grid;
+  gap: 8px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.2);
+}
+.address-field {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+}
+.address-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+.address-box {
+  position: relative;
+}
+.address-box input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0 40px 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS zooming in on focus */
+  color: inherit;
+}
+.address-box input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: -1px;
+  background: #fff;
+}
+.address-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  font-size: 22px;
+  color: #64748b;
+  cursor: pointer;
+}
+.address-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 44px;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
+  max-height: 50dvh;
+  overflow-y: auto;
+}
+.address-results li {
+  display: grid;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.address-results li[aria-selected='true'] {
+  background: #eff6ff;
+}
+.result-label {
+  font-weight: 600;
+}
+.result-detail,
+.result-note {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Keep Leaflet's zoom buttons below the address card */
+.mode-addresses .leaflet-top.leaflet-left {
+  top: calc(140px + env(safe-area-inset-top));
+}
+
+.warning {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 14px;
+}
+.status-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.link-button {
+  flex: none;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+/* Collapsible sections: signal list, settings */
+.disclosure {
+  margin-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+.disclosure > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+.disclosure > button::after {
+  content: '▾';
+  color: #64748b;
+  transition: transform 0.15s;
+}
+.disclosure > button[aria-expanded='true']::after {
+  transform: rotate(180deg);
+}
+
+.signal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.signal-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+.signal-list li + li {
+  border-top: 1px solid #f1f5f9;
+}
+.signal-list li.not-counted {
+  opacity: 0.6;
+}
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge.special {
+  background: #f59e0b;
+  color: #111;
+}
+.signal-text {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+}
+.signal-name {
+  overflow-wrap: anywhere;
+}
+.signal-text .muted {
+  font-size: 13px;
+}
+.passes {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.settings {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+.setting {
+  display: grid;
+  gap: 6px;
+}
+.setting input[type='range'] {
+  width: 100%;
+  accent-color: #2563eb;
+}
+.toggle.setting {
+  display: flex;
+  margin-left: 0;
+  font-weight: 400;
+}
+
+.data-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+.data-note a {
+  color: inherit;
+}
